@@ -1,0 +1,84 @@
+lognest is a simple program that formats salesforce debug files.
+
+Given a saved debug log  named demo.log with the content:
+
+24.0 APEX_CODE,FINE;APEX_PROFILING,FINE;DB,INFO;VALIDATION,INFO;WORKFLOW,FINEST
+10:58:01.109 (109855000)|EXECUTION_STARTED
+10:58:01.109 (109905000)|CODE_UNIT_STARTED|[EXTERNAL]|01pS0000000Dqx5|PropertyControllerTest.tooManyScriptStatements
+10:58:01.110 (110237000)|METHOD_ENTRY|[3]|01pS0000000Dqx5|PropertyControllerTest.PropertyControllerTest()
+10:58:01.110 (110337000)|METHOD_EXIT|[3]|PropertyControllerTest
+10:58:01.110 (110857000)|CONSTRUCTOR_ENTRY|[145]|01pS0000000Dqx5|<init>()
+10:58:01.110 (110899000)|METHOD_ENTRY|[1]|01pS0000000DqvF|PropertyController.PropertyController()
+10:58:01.112 (112470000)|METHOD_EXIT|[1]|PropertyController
+10:58:01.112 (112488000)|CONSTRUCTOR_ENTRY|[5]|01pS0000000DqvF|<init>()
+10:58:01.112 (112548000)|METHOD_ENTRY|[105]|01pS0000000DqvF|PropertyController.__sfdc_detailText(String)
+10:58:01.126 (126281000)|METHOD_EXIT|[105]|01pS0000000DqvF|PropertyController.__sfdc_detailText(String)
+10:58:01.126 (126314000)|METHOD_ENTRY|[1]|01pS0000000Dlo8|FilteringLabeledListsController.FilteringLabeledListsController()
+10:58:01.126 (126331000)|METHOD_EXIT|[1]|FilteringLabeledListsController
+10:58:01.126 (126341000)|CONSTRUCTOR_ENTRY|[80]|01pS0000000Dlo8|<init>()
+10:58:01.126 (126412000)|METHOD_ENTRY|[71]|01pS0000000Dlo8|FilteringLabeledListsController.__sfdc_parameters(MAP<String,String>)
+10:58:01.127 (127788000)|METHOD_EXIT|[71]|01pS0000000Dlo8|FilteringLabeledListsController.__sfdc_parameters(MAP<String,String>)
+10:58:01.127 (127813000)|METHOD_ENTRY|[306]|01pS0000000Dlo8|FilteringLabeledListsController.__sfdc_saveName(String)
+10:58:01.127 (127854000)|METHOD_EXIT|[306]|01pS0000000Dlo8|FilteringLabeledListsController.__sfdc_saveName(String)
+10:58:01.127 (127885000)|METHOD_ENTRY|[1]|01pS0000000DqGG|AquariusController.AquariusController()
+10:58:01.127 (127899000)|METHOD_EXIT|[1]|AquariusController
+
+the command:  "lognest.exe demo.log" will produce the following output:
+
+tgagne@ubuntu:~/work/lognest$ ./lognest.exe demo.log
+
+Opening file [demo.log]
+24.0 APEX_CODE,FINE;APEX_PROFILING,FINE;DB,INFO;VALIDATION,INFO;WORKFLOW,FINEST
+4 0  10:58:01.110 (110237000)|METHOD_ENTRY|[3]|01pS0000000Dqx5|PropertyControllerTest.PropertyControllerTest()
+6 0  10:58:01.110 (110857000)|CONSTRUCTOR_ENTRY|[145]|01pS0000000Dqx5|<init>()
+7 1      10:58:01.110 (110899000)|METHOD_ENTRY|[1]|01pS0000000DqvF|PropertyController.PropertyController()
+9 1      10:58:01.112 (112488000)|CONSTRUCTOR_ENTRY|[5]|01pS0000000DqvF|<init>()
+10 2          10:58:01.112 (112548000)|METHOD_ENTRY|[105]|01pS0000000DqvF|PropertyController.__sfdc_detailText(String)
+12 2          10:58:01.126 (126314000)|METHOD_ENTRY|[1]|01pS0000000Dlo8|FilteringLabeledListsController.FilteringLabeledListsController()
+14 2          10:58:01.126 (126341000)|CONSTRUCTOR_ENTRY|[80]|01pS0000000Dlo8|<init>()
+15 3              10:58:01.126 (126412000)|METHOD_ENTRY|[71]|01pS0000000Dlo8|FilteringLabeledListsController.__sfdc_parameters(MAP<String,String>)
+17 3              10:58:01.127 (127813000)|METHOD_ENTRY|[306]|01pS0000000Dlo8|FilteringLabeledListsController.__sfdc_saveName(String)
+19 3              10:58:01.127 (127885000)|METHOD_ENTRY|[1]|01pS0000000DqGG|AquariusController.AquariusController()
+2 <init>()
+1 <init>()
+0 <init>()
+    3 <init>()
+    1 FilteringLabeledListsController.__sfdc_parameters(MAP<String,String>)
+    1 FilteringLabeledListsController.__sfdc_saveName(String)
+    1 AquariusController.AquariusController()
+    1 FilteringLabeledListsController.FilteringLabeledListsController()
+    1 PropertyControllerTest.PropertyControllerTest()
+    1 PropertyController.PropertyController()
+    1 PropertyController.__sfdc_detailText(String)
+
+
+The three sections are:
+1) indented lines to show which methods are nested inside others
+2) the unwind stack, showing from where the log ended, which methods
+   are still on the stack
+3) a count of how many times specific methods occur in the log file.
+
+Here are parts of those three sections from a much larger log file.
+
+47288 6                          23:27:25.603 (4603577000)|METHOD_ENTRY|[57]|01p80000000YEcZ|AquariusCollection.__sfdc_modelList()
+47290 6                          23:27:25.603 (4603597000)|METHOD_ENTRY|[57]|01p80000000YDso|PositionWeek.getKeyString()
+47291 7                              23:27:25.603 (4603604000)|METHOD_ENTRY|[114]|01p80000000YDso|PositionWeek.getStartDate()
+47293 7                              23:27:25.603 (4603622000)|METHOD_ENTRY|[114]|01p80000000YBrn|Utility.DateString(Date)
+47302 6                          23:27:25.603 (4603719000)|METHOD_ENTRY|[57]|01p80000000YEcZ|AquariusCollection.__sfdc_modelList()
+*********** MAXIMUM DEBUG LOG SIZE REACHED ***********
+5 AquariusCollection.rebuildMaps()
+4 <init>(Id,LIST<PositionWeek>)
+3 <init>(Binder_Position__c,LIST<PositionWeek>)
+2 BinderPositionCollection.ListForJobNumber(LIST<String>)
+1 ProjectTrackingController.initializeEstimatedPlan()
+0 ActEstController.initialize()
+ 2737 <init>()
+ 2639 <init>(Position_Week__c)
+ 1653 AquariusCollection.__sfdc_modelList()
+  806 PositionWeek.getKeyString()
+  806 Utility.DateString(Date)
+  806 PositionWeek.getStartDate()
+  444 AquariusCollection.size()
+  403 AquariusCollection.__sfdc_modelIndex()
+  403 AquariusCollection.__sfdc_modelMap()
+

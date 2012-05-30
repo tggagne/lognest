@@ -33,7 +33,7 @@ namespace LogNest
 
                 var exitPattern = new Regex("\\|METHOD_EXIT|CONSTRUCTOR_EXIT\\|");
                 var enterPattern = new Regex("\\|METHOD_ENTRY|CONSTRUCTOR_ENTRY\\|");
-                var echoPattern = new Regex("(^[0-9:.]{12} \\([0-9]{9}\\)\\|)");
+                var echoPattern = new Regex("^[0-9:.]{12,12} \\([0-9]+\\)\\|");
                 var debugPattern = new Regex("\\|USER_DEBUG\\|");
 
                 while ((aLine = readStream.ReadLine()) != null)
@@ -58,7 +58,7 @@ namespace LogNest
                         methodStack.Push(method);
                     }
 
-                    if (debugPattern.IsMatch(aLine) || echoPattern.IsMatch(aLine) == false)
+                    if (debugPattern.IsMatch(aLine) || !echoPattern.IsMatch(aLine))
                         Console.Out.WriteLine(aLine);
 
                     lineNumber++;
